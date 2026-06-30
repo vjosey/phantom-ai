@@ -26,7 +26,7 @@ interface AuthScreenProps {
 
 export function AuthScreen({ children }: AuthScreenProps) {
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-dvh bg-background">
       <div className="hidden w-1/2 flex-col justify-center gap-12 bg-card px-16 lg:flex">
         <div className="flex items-center gap-2.5">
           <span className="size-8 rounded-lg bg-primary" />
@@ -68,7 +68,7 @@ export function AuthScreen({ children }: AuthScreenProps) {
         </p>
       </div>
 
-      <div className="flex w-full items-center justify-center px-6 lg:w-1/2">
+      <div className="flex w-full items-start justify-center px-6 py-12 lg:w-1/2 lg:items-center lg:py-6">
         {children}
       </div>
     </div>
