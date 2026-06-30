@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Design system & UI primitives
+- Editor chrome
 
 ## Current Goal
 
-- Implement `context/feature-specs/01-design-system.md`: install/configure shadcn/ui, add UI primitives, install lucide-react, create `lib/utils.ts` cn() helper, match existing dark theme.
+- Implement `context/feature-specs/02-editor-chrome.md`: `editor-navbar.tsx`, `project-sidebar.tsx`, and a reusable dialog pattern (title/description/footer) for future use.
 
 ## Completed
 
@@ -19,6 +19,12 @@ Update this file whenever the current phase, active feature, or implementation s
   - `lib/utils.ts` created with `cn()` helper (clsx + tailwind-merge).
   - `app/globals.css` rewritten to a single dark theme (no light/`.dark` toggle) using the hex values from `context/ui-context.md`'s color table, mapped onto shadcn's semantic variables (`--background`, `--foreground`, `--primary`, etc.).
   - Verified: `tsc --noEmit` and `next build` both pass clean; no light-mode tokens remain in `globals.css`.
+
+- Editor chrome (`context/feature-specs/02-editor-chrome.md`):
+  - `components/editor/editor-navbar.tsx` — fixed-height (`h-12`) top navbar, three-section grid layout, sidebar toggle button swapping `PanelLeftOpen`/`PanelLeftClose` based on `isSidebarOpen` prop, dark `bg-background` with `border-b border-border`. Center/right sections are empty placeholders for future content.
+  - `components/editor/project-sidebar.tsx` — floating overlay panel (`fixed`, doesn't affect page flow), slides in/out from the left via `translate-x` + `isOpen` prop, header with "Projects" title and close button, shadcn `Tabs` (My Projects / Shared) each with an empty placeholder string, full-width "New Project" button with `Plus` icon pinned to the bottom.
+  - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
+  - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
 
 ## In Progress
 
