@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor chrome
+- Auth
 
 ## Current Goal
 
-- Implement `context/feature-specs/02-editor-chrome.md`: `editor-navbar.tsx`, `project-sidebar.tsx`, and a reusable dialog pattern (title/description/footer) for future use.
+- Implement `context/feature-specs/03-auth.md`: wire Clerk into the app (`ClerkProvider` with `dark` theme + CSS variable overrides, `proxy.ts` route protection via sign-in/sign-up env vars, minimal two-panel sign-in/sign-up screens, `/` redirect logic, `UserButton` in the editor navbar).
 
 ## Completed
 
@@ -25,6 +25,16 @@ Update this file whenever the current phase, active feature, or implementation s
   - `components/editor/project-sidebar.tsx` — floating overlay panel (`fixed`, doesn't affect page flow), slides in/out from the left via `translate-x` + `isOpen` prop, header with "Projects" title and close button, shadcn `Tabs` (My Projects / Shared) each with an empty placeholder string, full-width "New Project" button with `Plus` icon pinned to the bottom.
   - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
   - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
+
+- Auth (`context/feature-specs/03-auth.md`):
+  - `app/layout.tsx` — `ClerkProvider` uses Clerk's `dark` base theme (`@clerk/ui/themes`) with `variables` overridden to reference the app's existing CSS custom properties (`var(--card)`, `var(--foreground)`, `var(--primary)`, `var(--destructive)`, `var(--muted)`, `var(--input)`, `var(--radius)`, etc.) — no hardcoded colors.
+  - `proxy.ts` — public routes are derived from `NEXT_PUBLIC_CLERK_SIGN_IN_URL`/`NEXT_PUBLIC_CLERK_SIGN_UP_URL` env vars (not hardcoded paths); everything else is protected via `auth.protect()`. `/__clerk/:path*` matcher retained.
+  - `components/auth/auth-screen.tsx` — shared two-panel layout: left panel (`hidden lg:flex`) with compact wordmark, one-line tagline, and a short text-only feature list; right panel centers the Clerk form. No gradients, hero sections, feature cards, or scroll. Small screens show form only. Used by `app/sign-in/[[...sign-in]]/page.tsx` and `app/sign-up/[[...sign-up]]/page.tsx`.
+  - `app/page.tsx` — now just `redirect("/editor")`; unauthenticated requests never reach it because `/` is protected by the proxy and `auth.protect()` redirects them to sign-in first.
+  - Recreated `app/editor/layout.tsx` + `app/editor/page.tsx` (placeholder canvas) as the authenticated redirect target, using `components/editor/editor-shell.tsx` (sidebar open/close state) to compose `EditorNavbar` + `ProjectSidebar`.
+  - `components/editor/editor-navbar.tsx` — right section now renders Clerk's `UserButton` for profile/logout.
+  - Removed the now-unused `@import "@clerk/ui/themes/shadcn.css"` from `globals.css` (superseded by the `dark` theme + variable overrides).
+  - Verified: `tsc --noEmit`, `eslint`, `next build` all pass clean; manually confirmed `/` and `/editor` 307-redirect unauthenticated requests to `/sign-in` (with `redirect_url`), and `/sign-in`/`/sign-up` both return 200.
 
 ## In Progress
 

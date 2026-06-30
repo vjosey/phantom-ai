@@ -9,6 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+/context/current-issues.md
 
 # testing
 /coverage
@@ -39,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent skills (regenerated from skills-lock.json via the skills CLI)
+/.agents/skills/
+/.claude/skills/
+.claude/settings.local.json
