@@ -14,6 +14,8 @@ interface ProjectSidebarProps {
 export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
   return (
     <aside
+      inert={!isOpen}
+      aria-hidden={!isOpen}
       className={cn(
         "fixed top-16 bottom-4 left-3 z-40 flex w-72 flex-col rounded-2xl border border-border bg-card text-card-foreground shadow-lg transition-transform duration-200",
         isOpen ? "translate-x-0" : "-translate-x-[120%]"
