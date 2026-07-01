@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Prisma - 05-prisma
+- Project APIs - 06-project-apis
 
 ## Current Goal
 
-- Implement `context/feature-specs/05-prisma.md`: Project + ProjectCollaborator models, Prisma client singleton branching by DATABASE_URL (Accelerate vs direct pg), and first migration.
+- Implement `context/feature-specs/06-project-apis.md`: REST routes for list/create/rename/delete projects with Clerk auth and owner checks.
 
 ## Completed
 
@@ -25,6 +25,12 @@ Update this file whenever the current phase, active feature, or implementation s
   - `components/editor/project-sidebar.tsx` — floating overlay panel (`fixed`, doesn't affect page flow), slides in/out from the left via `translate-x` + `isOpen` prop, header with "Projects" title and close button, shadcn `Tabs` (My Projects / Shared) each with an empty placeholder string, full-width "New Project" button with `Plus` icon pinned to the bottom.
   - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
   - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
+
+- Project APIs (`context/feature-specs/06-project-apis.md`):
+  - `app/api/projects/route.ts` — `GET` (list owner's projects, ordered newest-first); `POST` (create project, name defaults to `"Untitled Project"` if blank).
+  - `app/api/projects/[projectId]/route.ts` — `PATCH` (rename, validates name, enforces 401/403/404); `DELETE` (enforces 401/403/404, returns 204).
+  - All handlers check `auth()` from Clerk; mutations verify `project.ownerId === userId`.
+  - Verified: `tsc --noEmit` and `next build` pass clean; routes appear as dynamic in build output.
 
 - Prisma Schema & Data Layer (`context/feature-specs/05-prisma.md`):
   - `prisma/models/project.prisma` — `ProjectStatus` enum (`DRAFT`, `ARCHIVED`); `Project` model (ownerId, name, description?, status, canvasJsonPath?, timestamps, indexes on ownerId and createdAt); `ProjectCollaborator` model (projectId cascade-delete relation, email, createdAt, unique on projectId+email, indexes on email and projectId+createdAt).
