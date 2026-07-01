@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Auth
+- Dialog
 
 ## Current Goal
 
-- Implement `context/feature-specs/03-auth.md`: wire Clerk into the app (`ClerkProvider` with `dark` theme + CSS variable overrides, `proxy.ts` route protection via sign-in/sign-up env vars, minimal two-panel sign-in/sign-up screens, `/` redirect logic, `UserButton` in the editor navbar).
+- Implement `context/feature-specs/04-project-dialog.md`
 
 ## Completed
 
@@ -26,6 +26,19 @@ Update this file whenever the current phase, active feature, or implementation s
   - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
   - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
 
+- Project Dialogs & Editor Home (`context/feature-specs/04-project-dialogs.md`):
+  - `lib/mock-projects.ts` — `MockProject` interface + `MOCK_PROJECTS` array (2 owned, 1 shared).
+  - `hooks/use-project-dialogs.ts` — `useProjectDialogs` hook managing dialog type, active project, name input, loading state; `generateSlug()` helper.
+  - `components/editor/project-dialogs-context.tsx` — `ProjectDialogsContext` + `useProjectDialogsContext()` consumer hook.
+  - `components/editor/create-project-dialog.tsx` — name input with live slug preview, Enter submits.
+  - `components/editor/rename-project-dialog.tsx` — prefilled input, auto-focus, current project name in description, Enter submits.
+  - `components/editor/delete-project-dialog.tsx` — destructive confirm, no input, destructive button style.
+  - `components/editor/editor-home.tsx` — center home screen: heading, description, "New Project" button wired to Create dialog.
+  - `components/editor/project-sidebar.tsx` — project list in My Projects/Shared tabs; rename/delete icon buttons (hover-reveal) shown only for owned projects; "New Project" button opens Create dialog.
+  - `components/editor/editor-shell.tsx` — provides `ProjectDialogsContext`, renders all three dialogs, adds mobile backdrop scrim (closes sidebar on tap).
+  - `app/editor/page.tsx` — renders `<EditorHome />`.
+  - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
+
 - Auth (`context/feature-specs/03-auth.md`):
   - `app/layout.tsx` — `ClerkProvider` uses Clerk's `dark` base theme (`@clerk/ui/themes`) with `variables` overridden to reference the app's existing CSS custom properties (`var(--card)`, `var(--foreground)`, `var(--primary)`, `var(--destructive)`, `var(--muted)`, `var(--input)`, `var(--radius)`, etc.) — no hardcoded colors.
   - `proxy.ts` — public routes are derived from `NEXT_PUBLIC_CLERK_SIGN_IN_URL`/`NEXT_PUBLIC_CLERK_SIGN_UP_URL` env vars (not hardcoded paths); everything else is protected via `auth.protect()`. `/__clerk/:path*` matcher retained.
@@ -38,7 +51,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- None yet.
+- None.
 
 ## Next Up
 

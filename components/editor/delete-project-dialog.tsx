@@ -1,0 +1,37 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { EditorDialog } from "@/components/editor/editor-dialog"
+import { useProjectDialogsContext } from "@/components/editor/project-dialogs-context"
+
+export function DeleteProjectDialog() {
+  const { dialogType, activeProject, isLoading, closeDialog, handleDelete } =
+    useProjectDialogsContext()
+
+  return (
+    <EditorDialog
+      open={dialogType === "delete"}
+      onOpenChange={(open) => { if (!open) closeDialog() }}
+      title="Delete project"
+      description={
+        activeProject
+          ? `"${activeProject.name}" will be permanently deleted. This cannot be undone.`
+          : "This project will be permanently deleted. This cannot be undone."
+      }
+      footer={
+        <>
+          <Button variant="ghost" onClick={closeDialog} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            Delete project
+          </Button>
+        </>
+      }
+    />
+  )
+}
