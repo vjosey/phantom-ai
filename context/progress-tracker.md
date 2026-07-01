@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Dialog - 04-project-dialog
+- Prisma - 05-prisma
 
 ## Current Goal
 
-- Implement `context/feature-specs/04-project-dialog.md`
+- Implement `context/feature-specs/05-prisma.md`: Project + ProjectCollaborator models, Prisma client singleton branching by DATABASE_URL (Accelerate vs direct pg), and first migration.
 
 ## Completed
 
@@ -25,6 +25,13 @@ Update this file whenever the current phase, active feature, or implementation s
   - `components/editor/project-sidebar.tsx` — floating overlay panel (`fixed`, doesn't affect page flow), slides in/out from the left via `translate-x` + `isOpen` prop, header with "Projects" title and close button, shadcn `Tabs` (My Projects / Shared) each with an empty placeholder string, full-width "New Project" button with `Plus` icon pinned to the bottom.
   - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
   - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
+
+- Prisma Schema & Data Layer (`context/feature-specs/05-prisma.md`):
+  - `prisma/models/project.prisma` — `ProjectStatus` enum (`DRAFT`, `ARCHIVED`); `Project` model (ownerId, name, description?, status, canvasJsonPath?, timestamps, indexes on ownerId and createdAt); `ProjectCollaborator` model (projectId cascade-delete relation, email, createdAt, unique on projectId+email, indexes on email and projectId+createdAt).
+  - `lib/prisma.ts` — cached singleton; branches on `DATABASE_URL`: `prisma+postgres://` → `PrismaPg` adapter + `withAccelerate()` extension; otherwise → `PrismaPg` adapter direct; global cached in development.
+  - Migration `20260701231419_init_project_models` applied to Prisma Postgres.
+  - Client generated to `app/generated/prisma/`.
+  - Verified: `tsc --noEmit` and `next build` pass clean.
 
 - Project Dialogs & Editor Home (`context/feature-specs/04-project-dialogs.md`):
   - `lib/mock-projects.ts` — `MockProject` interface + `MOCK_PROJECTS` array (2 owned, 1 shared).
@@ -51,7 +58,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- 04-project-dialog
+- None.
 
 ## Next Up
 
