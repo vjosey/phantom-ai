@@ -4,7 +4,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Dialog
+- Dialog - 04-project-dialog
 
 ## Current Goal
 
@@ -51,11 +51,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## In Progress
 
-- None.
+- 04-project-dialog
 
 ## Next Up
 
-- Add the next planned feature unit here.
+- 05-prisma
 
 ## Open Questions
 
