@@ -14,6 +14,7 @@ export function CreateProjectDialog() {
     setNameInput,
     roomIdPreview,
     isLoading,
+    error,
     closeDialog,
     handleCreate,
   } = useProjectDialogsContext()
@@ -58,6 +59,7 @@ export function CreateProjectDialog() {
             Room ID: <span className="font-mono">{roomIdPreview}</span>
           </p>
         )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
     </EditorDialog>
   )

@@ -12,6 +12,7 @@ export function RenameProjectDialog() {
     nameInput,
     setNameInput,
     isLoading,
+    error,
     closeDialog,
     handleRename,
   } = useProjectDialogsContext()
@@ -44,6 +45,7 @@ export function RenameProjectDialog() {
         onKeyDown={(e) => { if (e.key === "Enter") handleRename() }}
         autoFocus
       />
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </EditorDialog>
   )
 }

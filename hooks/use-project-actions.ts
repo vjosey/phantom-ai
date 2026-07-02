@@ -14,6 +14,7 @@ export interface UseProjectActionsResult {
   setNameInput: (v: string) => void
   roomIdPreview: string
   isLoading: boolean
+  error: string | null
   openCreate: () => void
   openRename: (project: ProjectSummary) => void
   openDelete: (project: ProjectSummary) => void
@@ -43,6 +44,7 @@ export function useProjectActions(): UseProjectActionsResult {
   const [activeProject, setActiveProject] = useState<ProjectSummary | null>(null)
   const [nameInput, setNameInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const roomSuffix = useRef(generateSuffix())
 
   const slug = generateSlug(nameInput)
@@ -52,17 +54,20 @@ export function useProjectActions(): UseProjectActionsResult {
     roomSuffix.current = generateSuffix()
     setNameInput("")
     setActiveProject(null)
+    setError(null)
     setDialogType("create")
   }
 
   function openRename(project: ProjectSummary) {
     setNameInput(project.name)
     setActiveProject(project)
+    setError(null)
     setDialogType("rename")
   }
 
   function openDelete(project: ProjectSummary) {
     setActiveProject(project)
+    setError(null)
     setDialogType("delete")
   }
 
@@ -70,21 +75,25 @@ export function useProjectActions(): UseProjectActionsResult {
     setDialogType("none")
     setActiveProject(null)
     setNameInput("")
+    setError(null)
   }
 
   async function handleCreate() {
     if (!nameInput.trim()) return
     setIsLoading(true)
+    setError(null)
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: nameInput.trim() }),
       })
-      if (!res.ok) throw new Error("Failed to create project")
+      if (!res.ok) throw new Error("Failed to create project. Please try again.")
       const project: ProjectSummary = await res.json()
       closeDialog()
       router.push(`/editor/${project.id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.")
     } finally {
       setIsLoading(false)
     }
@@ -93,15 +102,18 @@ export function useProjectActions(): UseProjectActionsResult {
   async function handleRename() {
     if (!nameInput.trim() || !activeProject) return
     setIsLoading(true)
+    setError(null)
     try {
       const res = await fetch(`/api/projects/${activeProject.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: nameInput.trim() }),
       })
-      if (!res.ok) throw new Error("Failed to rename project")
+      if (!res.ok) throw new Error("Failed to rename project. Please try again.")
       closeDialog()
       router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.")
     } finally {
       setIsLoading(false)
     }
@@ -110,17 +122,20 @@ export function useProjectActions(): UseProjectActionsResult {
   async function handleDelete() {
     if (!activeProject) return
     setIsLoading(true)
+    setError(null)
     try {
       const res = await fetch(`/api/projects/${activeProject.id}`, {
         method: "DELETE",
       })
-      if (!res.ok) throw new Error("Failed to delete project")
+      if (!res.ok) throw new Error("Failed to delete project. Please try again.")
       closeDialog()
       if (pathname === `/editor/${activeProject.id}`) {
         router.push("/editor")
       } else {
         router.refresh()
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.")
     } finally {
       setIsLoading(false)
     }
@@ -133,6 +148,7 @@ export function useProjectActions(): UseProjectActionsResult {
     setNameInput,
     roomIdPreview,
     isLoading,
+    error,
     openCreate,
     openRename,
     openDelete,

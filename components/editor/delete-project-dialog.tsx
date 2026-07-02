@@ -7,7 +7,7 @@ import { EditorDialog } from "@/components/editor/editor-dialog"
 import { useProjectDialogsContext } from "@/components/editor/project-dialogs-context"
 
 export function DeleteProjectDialog() {
-  const { dialogType, activeProject, isLoading, closeDialog, handleDelete } =
+  const { dialogType, activeProject, isLoading, error, closeDialog, handleDelete } =
     useProjectDialogsContext()
 
   return (
@@ -41,6 +41,8 @@ export function DeleteProjectDialog() {
           </Button>
         </>
       }
-    />
+    >
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </EditorDialog>
   )
 }
