@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Project APIs - 06-project-apis
+- Wire Editor Home - 07-wire-editor-home
 
 ## Current Goal
 
-- Implement `context/feature-specs/06-project-apis.md`: REST routes for list/create/rename/delete projects with Clerk auth and owner checks.
+- Implement `context/feature-specs/07-wire-editor-home.md`: server-side project data fetching, `useProjectActions` hook with real API mutations, wiring sidebar and dialogs to live data.
 
 ## Completed
 
@@ -25,6 +25,16 @@ Update this file whenever the current phase, active feature, or implementation s
   - `components/editor/project-sidebar.tsx` — floating overlay panel (`fixed`, doesn't affect page flow), slides in/out from the left via `translate-x` + `isOpen` prop, header with "Projects" title and close button, shadcn `Tabs` (My Projects / Shared) each with an empty placeholder string, full-width "New Project" button with `Plus` icon pinned to the bottom.
   - `components/editor/editor-dialog.tsx` — reusable dialog pattern wrapping shadcn `Dialog` with `title`, optional `description`, optional `footer`, and `children` slots. Not instantiated anywhere yet — ready for future dialogs to consume.
   - Verified: `tsc --noEmit`, `eslint`, and `next build` all pass clean.
+
+- Wire Editor Home (`context/feature-specs/07-wire-editor-home.md`):
+  - `lib/projects.ts` — `ProjectSummary` interface; `getOwnedProjects()` (auth → prisma select); `getSharedProjects()` (currentUser email → collaborator lookup).
+  - `hooks/use-project-actions.ts` — replaces `use-project-dialogs.ts` mock hook; `useProjectActions()` manages dialog state, stable `roomSuffix` ref, `roomIdPreview` (slug + suffix); `handleCreate` POSTs then navigates to `/editor/${project.id}`; `handleRename` PATCHes then `router.refresh()`; `handleDelete` DELETEs then redirects to `/editor` if deleting the active workspace, else refreshes.
+  - `components/editor/project-dialogs-context.tsx` — context type updated to `UseProjectActionsResult`.
+  - `components/editor/create-project-dialog.tsx` — shows `roomIdPreview` instead of slug.
+  - `components/editor/project-sidebar.tsx` — accepts `ownedProjects` + `sharedProjects` props; owned items show rename/delete actions, shared do not.
+  - `components/editor/editor-shell.tsx` — accepts project list props, uses `useProjectActions`, passes lists to sidebar.
+  - `app/editor/layout.tsx` — async server component, fetches both project lists in parallel, passes to `EditorShell`.
+  - Verified: `tsc --noEmit` and `next build` pass clean; `/editor` is dynamic (ƒ) in build output.
 
 - Project APIs (`context/feature-specs/06-project-apis.md`):
   - `app/api/projects/route.ts` — `GET` (list owner's projects, ordered newest-first); `POST` (create project, name defaults to `"Untitled Project"` if blank).

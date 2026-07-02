@@ -9,18 +9,25 @@ import { EditorNavbar } from "@/components/editor/editor-navbar"
 import { ProjectDialogsContext } from "@/components/editor/project-dialogs-context"
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
 import { RenameProjectDialog } from "@/components/editor/rename-project-dialog"
-import { useProjectDialogs } from "@/hooks/use-project-dialogs"
+import { useProjectActions } from "@/hooks/use-project-actions"
+import type { ProjectSummary } from "@/lib/projects"
 
 interface EditorShellProps {
   children: ReactNode
+  ownedProjects: ProjectSummary[]
+  sharedProjects: ProjectSummary[]
 }
 
-export function EditorShell({ children }: EditorShellProps) {
+export function EditorShell({
+  children,
+  ownedProjects,
+  sharedProjects,
+}: EditorShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const dialogs = useProjectDialogs()
+  const actions = useProjectActions()
 
   return (
-    <ProjectDialogsContext.Provider value={dialogs}>
+    <ProjectDialogsContext.Provider value={actions}>
       <div className="flex h-screen flex-col">
         <EditorNavbar
           isSidebarOpen={isSidebarOpen}
@@ -38,6 +45,8 @@ export function EditorShell({ children }: EditorShellProps) {
         <ProjectSidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
+          ownedProjects={ownedProjects}
+          sharedProjects={sharedProjects}
         />
 
         <main className="relative flex-1 overflow-hidden">{children}</main>

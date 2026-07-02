@@ -1,16 +1,22 @@
 "use client"
 
+import { Loader2 } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { EditorDialog } from "@/components/editor/editor-dialog"
 import { Input } from "@/components/ui/input"
-import { generateSlug } from "@/hooks/use-project-dialogs"
 import { useProjectDialogsContext } from "@/components/editor/project-dialogs-context"
 
 export function CreateProjectDialog() {
-  const { dialogType, nameInput, setNameInput, isLoading, closeDialog, handleCreate } =
-    useProjectDialogsContext()
-
-  const slug = generateSlug(nameInput)
+  const {
+    dialogType,
+    nameInput,
+    setNameInput,
+    roomIdPreview,
+    isLoading,
+    closeDialog,
+    handleCreate,
+  } = useProjectDialogsContext()
 
   return (
     <EditorDialog
@@ -23,8 +29,18 @@ export function CreateProjectDialog() {
           <Button variant="ghost" onClick={closeDialog} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={handleCreate} disabled={!nameInput.trim() || isLoading}>
-            Create project
+          <Button
+            onClick={handleCreate}
+            disabled={!nameInput.trim() || isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create project"
+            )}
           </Button>
         </>
       }
@@ -37,9 +53,9 @@ export function CreateProjectDialog() {
           onKeyDown={(e) => { if (e.key === "Enter") handleCreate() }}
           autoFocus
         />
-        {slug && (
+        {roomIdPreview && (
           <p className="text-xs text-muted-foreground">
-            Slug: <span className="font-mono">{slug}</span>
+            Room ID: <span className="font-mono">{roomIdPreview}</span>
           </p>
         )}
       </div>

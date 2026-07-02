@@ -6,22 +6,30 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useProjectDialogsContext } from "@/components/editor/project-dialogs-context"
-import type { MockProject } from "@/lib/mock-projects"
+import type { ProjectSummary } from "@/lib/projects"
 import { cn } from "@/lib/utils"
 
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
+  ownedProjects: ProjectSummary[]
+  sharedProjects: ProjectSummary[]
 }
 
-function ProjectItem({ project }: { project: MockProject }) {
+function ProjectItem({
+  project,
+  showActions,
+}: {
+  project: ProjectSummary
+  showActions: boolean
+}) {
   const { openRename, openDelete } = useProjectDialogsContext()
 
   return (
     <div className="group flex items-center gap-1 rounded-xl px-2 py-2 hover:bg-secondary">
       <span className="flex-1 truncate text-sm">{project.name}</span>
-      {project.isOwned && (
-        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100">
+      {showActions && (
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
           <Button
             variant="ghost"
             size="icon-sm"
@@ -50,11 +58,40 @@ function ProjectItem({ project }: { project: MockProject }) {
   )
 }
 
-export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
-  const { openCreate, projects } = useProjectDialogsContext()
+function ProjectList({
+  projects,
+  showActions,
+  emptyMessage,
+}: {
+  projects: ProjectSummary[]
+  showActions: boolean
+  emptyMessage: string
+}) {
+  if (projects.length === 0) {
+    return (
+      <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+        {emptyMessage}
+      </div>
+    )
+  }
+  return (
+    <ScrollArea className="flex-1">
+      <div className="flex flex-col gap-0.5 py-1">
+        {projects.map((project) => (
+          <ProjectItem key={project.id} project={project} showActions={showActions} />
+        ))}
+      </div>
+    </ScrollArea>
+  )
+}
 
-  const ownedProjects = projects.filter((p) => p.isOwned)
-  const sharedProjects = projects.filter((p) => !p.isOwned)
+export function ProjectSidebar({
+  isOpen,
+  onClose,
+  ownedProjects,
+  sharedProjects,
+}: ProjectSidebarProps) {
+  const { openCreate } = useProjectDialogsContext()
 
   return (
     <aside
@@ -91,35 +128,19 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
         </TabsList>
 
         <TabsContent value="my-projects" className="flex flex-1 flex-col overflow-hidden">
-          {ownedProjects.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-              No projects yet.
-            </div>
-          ) : (
-            <ScrollArea className="flex-1">
-              <div className="flex flex-col gap-0.5 py-1">
-                {ownedProjects.map((project) => (
-                  <ProjectItem key={project.id} project={project} />
-                ))}
-              </div>
-            </ScrollArea>
-          )}
+          <ProjectList
+            projects={ownedProjects}
+            showActions
+            emptyMessage="No projects yet."
+          />
         </TabsContent>
 
         <TabsContent value="shared" className="flex flex-1 flex-col overflow-hidden">
-          {sharedProjects.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-              No shared projects yet.
-            </div>
-          ) : (
-            <ScrollArea className="flex-1">
-              <div className="flex flex-col gap-0.5 py-1">
-                {sharedProjects.map((project) => (
-                  <ProjectItem key={project.id} project={project} />
-                ))}
-              </div>
-            </ScrollArea>
-          )}
+          <ProjectList
+            projects={sharedProjects}
+            showActions={false}
+            emptyMessage="No shared projects yet."
+          />
         </TabsContent>
       </Tabs>
 

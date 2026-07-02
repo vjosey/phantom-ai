@@ -2,12 +2,12 @@
 
 import { createContext, useContext } from "react"
 
-import type { UseProjectDialogsResult } from "@/hooks/use-project-dialogs"
+import type { UseProjectActionsResult } from "@/hooks/use-project-actions"
 
 export const ProjectDialogsContext =
-  createContext<UseProjectDialogsResult | null>(null)
+  createContext<UseProjectActionsResult | null>(null)
 
-export function useProjectDialogsContext(): UseProjectDialogsResult {
+export function useProjectDialogsContext(): UseProjectActionsResult {
   const ctx = useContext(ProjectDialogsContext)
   if (!ctx) {
     throw new Error(
